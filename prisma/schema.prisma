@@ -11,6 +11,8 @@ datasource db {
 }
 
 model KeyStore {
-  id  Int    @id @default(autoincrement())
-  key String
+  id     Int     @id @default(autoincrement())
+  key    String
+  name   String
+  isMain Boolean
 }

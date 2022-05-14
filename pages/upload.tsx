@@ -40,7 +40,7 @@ const UploadPage: NextPage = () => {
         const body = JSON.stringify({
           filename: file.name,
           contentType: file.type,
-          isMain: file.meta.main, // Send main flag to backend
+          isMain: file.meta.main,
         });
 
         const response = await axios.post("/api/upload", {
@@ -76,7 +76,8 @@ const UploadPage: NextPage = () => {
           },
         ];
       }}
-    />
+      autoOpenFileEditor={true}
+    ></Dashboard>
   );
 };
 

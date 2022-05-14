@@ -10,7 +10,21 @@ import {
 import axios from "axios";
 import React from "react";
 
-export default function ListAndDownload(props: any) {
+interface IDataResponse {
+  totalPages: number;
+  currentPage: number;
+  data: Array<FileData>;
+}
+
+type FileData = {
+  id: string;
+  key: string;
+  name: string;
+  isMain: boolean;
+  url: string;
+};
+
+export default function ListAndDownload(props: IDataResponse) {
   const [data, setData] = React.useState(props.data);
   const [page, setPage] = React.useState(props.currentPage);
   const [loading, setLoading] = React.useState(false);
@@ -30,12 +44,17 @@ export default function ListAndDownload(props: any) {
   }
   return (
     <Grid sx={{ flexGrow: 1 }} container spacing={2}>
-      {data.map((item: any) => (
+      {data.map((item) => (
         <Grid item xs={12} key={item.url}>
-          <Card sx={{ maxWidth: 345 }}>
+          <Card
+            sx={{
+              maxWidth: 345,
+              border: `${item.isMain ? "1px solid red" : "none"}`,
+            }}
+          >
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                {item.key}
+                {item.name}
               </Typography>
             </CardContent>
             <CardActions>
@@ -67,7 +86,9 @@ export default function ListAndDownload(props: any) {
 }
 
 export async function getServerSideProps() {
-  const res = await axios.get("http://localhost:3000/api/get-files/");
+  const res = await axios.get<IDataResponse>(
+    "http://localhost:3000/api/get-files/"
+  );
   return {
     props: {
       data: res.data.data,
