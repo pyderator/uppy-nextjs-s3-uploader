@@ -1,7 +1,7 @@
-import { Card, CardContent, Grid, Pagination, Typography } from "@mui/material";
+import { Grid, Pagination } from "@mui/material";
 import axios from "axios";
 import React from "react";
-import CardActionButtons from "../components/CardActionButtons";
+import Card from "../components/Card";
 
 interface IDataResponse {
   totalPages: number;
@@ -9,7 +9,7 @@ interface IDataResponse {
   data: Array<FileData>;
 }
 
-type FileData = {
+export type FileData = {
   id: string;
   key: string;
   filename: string;
@@ -36,18 +36,10 @@ export default function ListAndDownload(props: IDataResponse) {
     setLoading(false);
   };
 
-  const deleteFile = async (id: string) => {
-    const res = await axios.get(`http://localhost:3000/api/delete?id=${id}`);
-
-    if (res.status === 200) {
-      setData((prevData) => prevData.filter((d) => d.id !== id));
-    }
-  };
-
   if (!data || loading) {
     return <h1>Loading</h1>;
   }
-  if (data.length <= 0 && totalPages >= 0) {
+  if (data.length <= 0 && totalPages > 0) {
     return (
       <>
         <h1>No files in this page</h1>
@@ -73,22 +65,12 @@ export default function ListAndDownload(props: IDataResponse) {
       {data.map((item) => (
         <Grid item xs={12} key={item.url}>
           <Card
-            sx={{
-              maxWidth: 345,
-              border: `${item.isMain ? "1px solid red" : "none"}`,
-            }}
-          >
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {item.filename}
-              </Typography>
-            </CardContent>
-            <CardActionButtons
-              deleteFile={deleteFile}
-              id={item.id}
-              url={item.url}
-            />
-          </Card>
+            filename={item.filename}
+            id={item.id}
+            url={item.url}
+            setData={setData}
+            isMain={item.isMain}
+          />
         </Grid>
       ))}
       <Grid item xs={12}>

@@ -54,7 +54,6 @@ const UploadPage: NextPage = () => {
   }, []);
 
   uppy.addPostProcessor(async (_) => {
-    console.log(uppy.getFiles());
     const files: Array<{
       key: string;
     }> = uppy.getFiles().map((f) => ({
