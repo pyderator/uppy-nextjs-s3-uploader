@@ -52,6 +52,25 @@ const UploadPage: NextPage = () => {
     });
   }, []);
 
+  uppy.addPostProcessor(async (_) => {
+    const files: Array<{
+      isMain: boolean | null;
+      key: string;
+      name: string;
+    }> = uppy.getFiles().map((f) => ({
+      isMain: Boolean(f.meta.isMain) ?? false,
+      key: decodeURIComponent(f.response?.uploadURL?.split("/")[3]!),
+      name: f.name,
+    }));
+
+    const response = await axios.post("http://localhost:3000/api/save-to-db", {
+      data: files,
+    });
+
+    if (response.status === 201)
+      uppy.info("Information saved successfully to database");
+  });
+
   return (
     <Dashboard
       uppy={uppy}

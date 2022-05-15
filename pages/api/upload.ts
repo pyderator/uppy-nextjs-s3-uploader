@@ -1,6 +1,5 @@
 import AWS from "aws-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../prisma";
 
 interface IFileDTO {
   filename: string;
@@ -30,17 +29,10 @@ export default function resolver(req: NextApiRequest, res: NextApiResponse) {
     try {
       s3.getSignedUrl("putObject", params, async (err, url) => {
         // Filename can be similar
-        await prisma.keyStore.create({
-          data: {
-            key: params.Key,
-            isMain: Boolean(data.isMain) ?? false,
-            name: data.filename,
-          },
-        });
-
         return res.status(200).json({
           method: "put",
           url,
+          key: params.Key,
         });
       });
     } catch (err) {
