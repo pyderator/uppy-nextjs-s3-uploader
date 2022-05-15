@@ -15,7 +15,13 @@ const CardActionButtons = ({
   return (
     <>
       <CardActions>
-        <Button size="small" download={true} href={url} target="_blank">
+        <Button
+          size="small"
+          download={true}
+          href={url}
+          target="_blank"
+          disabled={isDeleting}
+        >
           Download
         </Button>
         {isDeleting ? (
