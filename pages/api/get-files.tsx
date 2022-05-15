@@ -1,15 +1,6 @@
-import AWS from "aws-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../prisma";
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
-  region: process.env.AWS_REGION,
-});
-
-const s3 = new AWS.S3();
+import { s3 } from "../../utility/S3";
 
 const getPagination = (
   data: any,
@@ -19,6 +10,7 @@ const getPagination = (
 ) => {
   const currentPage = page ? +page : 0;
   const totalPages = Math.ceil(total / limit);
+
   return {
     totalPages,
     currentPage,
@@ -37,12 +29,19 @@ export default async function handler(
   }
 
   let { page, limit } = req.query;
+
   if (!page) page = "0";
   if (!limit) limit = PER_PAGE_DATA.toString();
 
   let results = await prisma.keyStore.findMany({
     skip: parseInt(page as string) * PER_PAGE_DATA,
     take: parseInt(limit as string) || 2,
+    select: {
+      id: true,
+      filename: true,
+      isMain: true,
+      key: true,
+    },
   });
 
   const newResults = results.map((r: any) => {

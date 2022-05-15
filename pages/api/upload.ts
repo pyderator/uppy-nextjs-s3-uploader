@@ -1,20 +1,12 @@
-import AWS from "aws-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../prisma";
+import { s3 } from "../../utility/S3";
 
 interface IFileDTO {
   filename: string;
-  isMain: boolean | null;
+  isMain: boolean;
   contentType: string;
 }
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
-  region: process.env.AWS_REGION,
-});
-
-const s3 = new AWS.S3();
 
 export default function resolver(req: NextApiRequest, res: NextApiResponse) {
   const data: IFileDTO = JSON.parse(req.body.data);
@@ -28,6 +20,18 @@ export default function resolver(req: NextApiRequest, res: NextApiResponse) {
   return new Promise((resolve, _) => {
     try {
       s3.getSignedUrl("putObject", params, async (err, url) => {
+        // Save file information to database after generating signed url for the request
+
+        await prisma.keyStore.create({
+          data: {
+            isMain: Boolean(data.isMain) ?? false,
+            key: params.Key,
+            bucketName: params.Bucket!,
+            region: process.env.AWS_REGION!,
+            filename: data.filename,
+          },
+        });
+
         // Filename can be similar
         return res.status(200).json({
           method: "put",

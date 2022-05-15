@@ -33,6 +33,7 @@ const UploadPage: NextPage = () => {
         if (isMarkedAsMain) return files;
 
         uppy.info("Please select atlease one file as main");
+
         return false;
       },
     }).use(AwsS3, {
@@ -53,12 +54,11 @@ const UploadPage: NextPage = () => {
   }, []);
 
   uppy.addPostProcessor(async (_) => {
+    console.log(uppy.getFiles());
     const files: Array<{
-      isMain: boolean | null;
       key: string;
-      name: string;
     }> = uppy.getFiles().map((f) => ({
-      isMain: Boolean(f.meta.isMain) ?? false,
+      isMain: Boolean(f.meta.main) ?? false,
       key: decodeURIComponent(f.response?.uploadURL?.split("/")[3]!),
       name: f.name,
     }));

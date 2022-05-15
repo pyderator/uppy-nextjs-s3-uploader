@@ -1,19 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../prisma";
 
-interface IFileDTO {
-  key: string;
-  isMain: boolean;
-  file: string;
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const response = await prisma.keyStore.createMany({
-    data: req.body.data,
+  const { data }: { data: { key: string } } = req.body;
+
+  const response = await prisma.keyStore.updateMany({
+    // Selecting all the records where key matches
+    where: {
+      key: data.key,
+    },
+    // Updating the isUploaded status
+    data: {
+      isUploaded: true,
+    },
   });
+
   if (response.count > 0) {
     return res
       .status(201)

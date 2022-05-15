@@ -11,8 +11,14 @@ datasource db {
 }
 
 model KeyStore {
-  id     Int     @id @default(autoincrement())
-  key    String
-  name   String
-  isMain Boolean
+  id         String   @id @default(uuid())
+  // File Metadata
+  key        String
+  filename   String
+  isMain     Boolean
+  isUploaded Boolean  @default(false)
+  // S3 Information
+  bucketName String
+  region     String
+  timestamp  DateTime @default(now())
 }
