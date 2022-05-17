@@ -88,15 +88,24 @@ export default function ListAndDownload(props: IDataResponse) {
   );
 }
 
-export async function getServerSideProps() {
-  const res = await axios.get<IDataResponse>(
-    "http://localhost:3000/api/get-files/"
-  );
-  return {
-    props: {
-      data: res.data.data,
-      totalPages: res.data.totalPages,
-      currentPage: res.data.currentPage,
-    },
-  };
+export async function getServerSideProps(ctx: any) {
+  const host = ctx.req.headers.host;
+  try {
+    const res = await axios.get(`http://${host}/api/get-files`);
+    return {
+      props: {
+        data: res.data.data,
+        totalPages: res.data.totalPages,
+        currentPage: res.data.currentPage,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        data: [],
+        totalPages: 0,
+        currentPage: 0,
+      },
+    };
+  }
 }

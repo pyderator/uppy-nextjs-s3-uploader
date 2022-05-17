@@ -25,6 +25,7 @@ const Card = ({
 
       if (res.status === 200) {
         setData((prevData) => prevData.filter((d) => d.id !== id));
+        return;
       }
 
       throw new Error();
